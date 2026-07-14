@@ -1,0 +1,19 @@
+/* main.css — custom CSS shared across components. Strata handles the majority;
+   rules land here only when a cross-component edge case needs custom CSS.
+   Structural responsive overrides live in responsive.css (RULE 17: range-based only). */
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}

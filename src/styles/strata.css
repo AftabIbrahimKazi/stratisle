@@ -1,0 +1,4 @@
+/* Strata CSS framework entry — directives are replaced at build time by the PostCSS plugin */
+@strata base;
+@strata components;
+@strata utilities;
