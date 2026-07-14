@@ -1,0 +1,32 @@
+/* responsive.css — breakpoint overrides for main.css.
+   RULE 17: range-based media queries only — every breakpoint is an isolated zone.
+   The six ranges below are the complete, locked set for this project: no new media
+   queries are ever added, here or in any component file. Every responsive override
+   in the project (component files included) uses these exact ranges — no shortcuts,
+   no min-width-only queries.
+   Component-level overrides do NOT go here; they live in the bottom half of their
+   own component CSS file (RULE 22) using these same ranges. */
+
+/* Extra Small — Portrait phones */
+@media (max-width: 575.98px) {
+}
+
+/* Small — Landscape phones */
+@media (min-width: 576px) and (max-width: 767.98px) {
+}
+
+/* Medium — Tablets */
+@media (min-width: 768px) and (max-width: 991.98px) {
+}
+
+/* Large — Desktops */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+}
+
+/* Extra Large — Large desktops */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+}
+
+/* XX-Large — Larger desktops */
+@media (min-width: 1400px) {
+}

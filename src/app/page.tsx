@@ -1,66 +1,41 @@
 import Image from "next/image";
-import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="container d-flex flex-column align-items-center justify-content-center gap-4 py-5 mt-5">
+      <Image src="/next.svg" alt="Next.js logo" width={100} height={20} priority />
+
+      <div className="card max-w-[560px] w-100">
+        <div className="card-header d-flex align-items-center justify-content-between">
+          <span className="fw-bold">Stratisle</span>
+          <span className="badge-info">Strata CSS</span>
+        </div>
+        <div className="card-body">
+          <h1 className="mb-2">To get started, edit the page.tsx file.</h1>
+          <p className="text-secondary mb-0">
+            This page is styled entirely with Strata component classes and
+            utilities — no CSS modules, no custom styles.
           </p>
         </div>
-        <div className={styles.ctas}>
+        <div className="card-footer d-flex gap-2 justify-content-end">
           <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            className="btn-primary"
+            href="https://nextjs.org/docs"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            Next.js Docs
           </a>
           <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            className="btn-outline-secondary"
+            href="https://aftabibrahimkazi.github.io/strata"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Documentation
+            Strata Demo
           </a>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

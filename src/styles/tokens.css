@@ -1,0 +1,12 @@
+/* Token file — single source of truth for all project design tokens.
+   Strata CSS provides its own theme tokens (--st-*); project tokens use --sl-.
+   Groups per RULE T-03: typography, spacing, palette, semantic colours, opacity, durations. */
+
+:root {
+  /* Typography — Strata's base layer sets body/heading leading; add --sl- tokens here as custom type styles appear */
+  /* Spacing */
+  /* Colour palette */
+  /* Semantic colours */
+  /* Opacity */
+  /* Transition durations */
+}

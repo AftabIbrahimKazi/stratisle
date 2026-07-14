@@ -20,6 +20,11 @@
 # production
 /build
 
+# claude-dev-kit (local dev tooling, not part of the site)
+/skills
+/coding-standards
+/.claude
+
 # misc
 .DS_Store
 *.pem
