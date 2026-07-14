@@ -88,4 +88,11 @@ Never edit a file without loading its standard chain first.
 
 ## Project State
 
-For current project state, completed work, known issues, and next steps read `handover.md` in the project root.
+Parallel-session mode is active. Project state lives in the `handover/` folder (role-session skill protocol):
+
+- `handover/project.md` — shared, role-agnostic baseline (state, decisions, gotchas). Read first.
+- `handover/board.md` — lane dashboard (one row per active task).
+- `handover/locks.md` — file claims + git token/queue.
+- `handover/roles/<role>.md` — role charters; `handover/<role>.md` — per-role lane handover.
+
+Follow `.claude/skills/role-session/SKILL.md`: claim files in `locks.md` before editing, never run git without holding the token, stay inside your role's charter paths.
