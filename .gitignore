@@ -26,6 +26,8 @@
 /.claude
 /handover
 /project-plan-docs
+CLAUDE.md
+AGENTS.md
 
 # misc
 .DS_Store
