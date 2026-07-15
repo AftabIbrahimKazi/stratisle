@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0] — 2026-07-15
+
+### Added
+- Client/server source split: `src/client/` (3D engine + React components) and `src/server/` (server-only data logic), with `src/app/` reserved as the thin routing layer
+- 3D engine scaffold `src/client/engine/` — orchestrator (`core.ts`) plus loop, camera, controller, assets, hdr, materials, lighting, state, utils, debug, and post subsystem placeholders documenting each one's role, activating stage, and rules
+- `scripts/bake/` — build-time baking pipeline placeholder (Stage 9)
+
+### Removed
+- `CLAUDE.md` and `AGENTS.md` untracked (moved to `.gitignore`) — local AI-tooling docs, not site code
+
 ## [0.3.0] — 2026-07-15
 
 ### Added
