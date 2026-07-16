@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0] — 2026-07-16
+
+### Added
+- Header component (`src/client/components/header/`) — Strata navbar, brand + nav via Next `Link` for client-side navigation
+- Footer component (`src/client/components/footer/`) — Strata utilities, carries the Strata/Triforge credits
+- Core design tokens in `src/styles/variables.css` (renamed from `tokens.css`): typography, spacing, island colour palette, semantic colours, opacity, cinematic durations, fixed sizes, radii, z-index plan — all `--sl-` prefixed, all numeric values even
+- Light/dark theme semantic remaps via `:root[data-st-theme]` — `data-st-theme` is the whole-site toggle on `<html>` only, by decision
+
+### Changed
+- Root layout renders Header and Footer around page content
+- Landing page credits paragraph removed (footer owns it now)
+
 ## [0.4.0] — 2026-07-15
 
 ### Added
