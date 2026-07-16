@@ -8,8 +8,16 @@ import type { NextConfig } from "next";
 // dev server just won't be reachable from other devices.
 const devLanOrigin = process.env.DEV_LAN_ORIGIN;
 
+// Setting allowedDevOrigins replaces Next's allow-list rather than
+// extending it — omitting these local variants here previously broke
+// 127.0.0.1 access even though only the LAN IP was ever intended to
+// be added.
+const LOCAL_DEV_ORIGINS = ["localhost", "127.0.0.1"];
+
 const nextConfig: NextConfig = {
-  allowedDevOrigins: devLanOrigin ? [devLanOrigin] : [],
+  allowedDevOrigins: devLanOrigin
+    ? [...LOCAL_DEV_ORIGINS, devLanOrigin]
+    : LOCAL_DEV_ORIGINS,
 };
 
 export default nextConfig;

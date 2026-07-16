@@ -6,7 +6,9 @@
 
 import * as THREE from "three";
 
-const GRID_SIZE = 200;
+// Sized to the 4000-unit map, not the old 40-unit scale — a helper
+// grid smaller than the scene it's meant to orient you in is useless.
+const GRID_SIZE = 4000;
 const GRID_DIVISIONS = 40;
 
 export function addDebugGrid(scene: THREE.Scene): THREE.GridHelper {

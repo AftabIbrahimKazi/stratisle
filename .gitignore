@@ -29,6 +29,15 @@
 CLAUDE.md
 AGENTS.md
 
+# raw bake sources (large, local-only — never shipped; baked output in
+# public/ is what the site actually uses)
+/scripts/bake/source
+
+# PNG alternate of the baked heightmap (kept locally as a toggle-back
+# option per the commented code in heightmap.ts) — the site only ships
+# the .webp; this stays local, never pushed
+/public/assets/height-map/*.png
+
 # misc
 .DS_Store
 *.pem
@@ -48,3 +57,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+scripts/bake/heightmap.ts
+scripts/bake/README.md

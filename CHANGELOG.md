@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.0] — 2026-07-17
+
+### Added
+- Island terrain mesh (Stage 1): `engine/assets` decodes the baked heightmap (fetch + `createImageBitmap` + `OffscreenCanvas` → single-channel elevation grid), `engine/materials/Island.ts` builds it via Triforge `Grid` → `SetPosition` → `evaluateGraph`, displayed with a placeholder `MeshNormalMaterial` (no texture yet)
+- Sea plane (`engine/materials/SeaPlane.ts`): a large flat low-poly `Grid` at sea level surrounding the island — free false-horizon effect from a grounded camera, built with the same Triforge pipeline minus displacement
+- `materials/` restructured into a barrel (`index.ts`) + one file per material (`Island.ts`, `SeaPlane.ts`), mirroring the existing `debug/` folder pattern, to hold future per-weather texture variants cleanly
+
+### Changed
+- Camera, debug grid, and dev fly-camera speed rescaled for the island/map's real-world unit scale (were tuned for an early 40-unit placeholder)
+- `next.config.ts`: fixed `allowedDevOrigins` replacing rather than extending Next's default local-origin allow-list, which had started blocking `127.0.0.1` alongside the intended LAN IP
+
 ## [0.6.0] — 2026-07-17
 
 ### Added
