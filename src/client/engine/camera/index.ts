@@ -9,8 +9,13 @@ import * as THREE from "three";
 
 const DEFAULT_FOV = 60;
 const DEFAULT_NEAR = 0.1;
-const DEFAULT_FAR = 2000;
-const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 6, 12);
+// Sea plane's far corners sit ~2828 units out (half-diagonal of the
+// 4000x4000 plane) — comfortable margin past that so the horizon
+// never clips.
+const DEFAULT_FAR = 6000;
+// Elevated establishing shot sized to frame the full 1000-unit island
+// with headroom, not the tight close-up tuned for the old 40-unit scale.
+const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 500, 1300);
 
 export function createPerspectiveCamera(
   aspect: number,

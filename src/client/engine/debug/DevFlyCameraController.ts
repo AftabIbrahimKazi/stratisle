@@ -11,7 +11,9 @@ import * as THREE from "three";
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import { clamp } from "../utils";
 
-const MOVE_SPEED = 8;
+// Scaled for the 1000-4000 unit map — the old value (tuned for a
+// 40-unit island) would take minutes to cross the new scene.
+const MOVE_SPEED = 300;
 const KEY_CODE_FORWARD = "KeyW";
 const KEY_CODE_BACKWARD = "KeyS";
 const KEY_CODE_LEFT = "KeyA";

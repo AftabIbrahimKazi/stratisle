@@ -22,6 +22,14 @@ import { createPerspectiveCamera } from "./camera";
 import { RenderLoop } from "./loop";
 import { ViewportController } from "./controller";
 import { addDebugGrid, removeDebugGrid, DevFlyCameraController } from "./debug";
+import { loadElevationField } from "./assets";
+import {
+  buildIslandGeometry,
+  createIslandMesh,
+  buildSeaPlaneMesh,
+} from "./materials";
+
+const HEIGHTMAP_URL = "/assets/height-map/nicobar-heightmap-448.webp";
 
 export class SceneEngine {
   private _canvas: HTMLCanvasElement;
@@ -30,6 +38,9 @@ export class SceneEngine {
   private _camera: THREE.PerspectiveCamera | null = null;
   private _loop: RenderLoop | null = null;
   private _viewportController: ViewportController | null = null;
+  private _islandMesh: THREE.Mesh | null = null;
+  private _islandLoadError: Error | null = null;
+  private _seaPlaneMesh: THREE.Mesh | null = null;
 
   // ---- DEV HELPERS (temporary) ----
   private _debugGrid: THREE.GridHelper | null = null;
@@ -57,6 +68,9 @@ export class SceneEngine {
     );
     this._viewportController.enable();
 
+    this._seaPlaneMesh = buildSeaPlaneMesh();
+    this.scene.add(this._seaPlaneMesh);
+
     // ---- DEV HELPERS (temporary) — comment out this block to disable ----
     this._debugGrid = addDebugGrid(this.scene);
     this._devCameraController = new DevFlyCameraController(
@@ -71,6 +85,19 @@ export class SceneEngine {
       this._renderer!.render(this.scene, this._camera!);
     });
     this._loop.start();
+
+    this._loadIsland().catch((error: unknown) => {
+      this._islandLoadError =
+        error instanceof Error ? error : new Error(String(error));
+    });
+  }
+
+  private async _loadIsland(): Promise<void> {
+    const elevation = await loadElevationField(HEIGHTMAP_URL);
+    const geometry = buildIslandGeometry(elevation);
+    const mesh = createIslandMesh(geometry);
+    this._islandMesh = mesh;
+    this.scene.add(mesh);
   }
 
   public destroy(): void {
@@ -81,6 +108,18 @@ export class SceneEngine {
     this._devCameraController?.disable();
     if (this._debugGrid) removeDebugGrid(this.scene, this._debugGrid);
     // ---- END DEV HELPERS ----
+
+    if (this._islandMesh) {
+      this.scene.remove(this._islandMesh);
+      this._islandMesh.geometry.dispose();
+      (this._islandMesh.material as THREE.Material).dispose(); // Mesh.material is typed as a union; createIslandMesh always assigns a single Material
+    }
+
+    if (this._seaPlaneMesh) {
+      this.scene.remove(this._seaPlaneMesh);
+      this._seaPlaneMesh.geometry.dispose();
+      (this._seaPlaneMesh.material as THREE.Material).dispose(); // same single-Material guarantee as the island mesh
+    }
 
     // forceContextLoss (not just dispose) matters here: React Strict Mode
     // runs every effect twice in dev (mount -> cleanup -> mount), so two
