@@ -1,0 +1,180 @@
+/* Token file — single source of truth for all project design tokens (RULE T-01).
+   Strata CSS provides its own theme tokens (--st-*); project tokens use --sl-.
+   Groups per RULE T-03. All numeric values are even — including decimals. */
+
+:root {
+  /* ================================
+     Typography
+     ================================ */
+
+  /* Font sizes — px, ascending (RULE T-04) */
+  --sl-font-size-xxs: 10px;
+  --sl-font-size-xs: 12px;
+  --sl-font-size-sm: 14px;
+  --sl-font-size-default: 16px;
+  --sl-font-size-md: 20px;
+  --sl-font-size-lg: 24px;
+  --sl-font-size-xl: 32px;
+  --sl-font-size-xxl: 48px;
+  --sl-font-size-xxxl: 64px;
+
+  /* Font weights */
+  --sl-font-weight-regular: 400;
+  --sl-font-weight-medium: 600;
+  --sl-font-weight-bold: 800;
+
+  /* Letter spacing */
+  --sl-tracking-tight: -0.02em;
+  --sl-tracking-default: 0em;
+  --sl-tracking-wide: 0.08em;
+
+  /* Leading — unitless, body + headings only (RULE 05) */
+  --sl-leading-body: 1.6;
+  --sl-leading-tight: 1.2;
+
+  /* ================================
+     Spacing
+     ================================ */
+
+  --sl-space-xxxs: 2px;
+  --sl-space-xxs: 4px;
+  --sl-space-xs: 8px;
+  --sl-space-sm: 12px;
+  --sl-space-default: 16px;
+  --sl-space-md: 24px;
+  --sl-space-lg: 32px;
+  --sl-space-xl: 48px;
+  --sl-space-xxl: 64px;
+  --sl-space-xxxl: 96px;
+
+  /* ================================
+     Colour palette — raw values (RULE T-02: named by value, not usage)
+     Cinematic island range: ocean depths, lagoon shallows, vegetation,
+     sand, sunset, storm greys.
+     ================================ */
+
+  --sl-color-ocean-deep: #062436;
+  --sl-color-ocean: #0e4866;
+  --sl-color-ocean-bright: #1a6e96;
+  --sl-color-lagoon: #2aa896;
+  --sl-color-lagoon-light: #86d8cc;
+  --sl-color-palm: #46783c;
+  --sl-color-palm-light: #88b070;
+  --sl-color-sand: #e8dcc0;
+  --sl-color-sand-light: #f6f0e2;
+  --sl-color-sunset: #e87848;
+  --sl-color-sunset-deep: #c04a2e;
+  --sl-color-storm: #4a5866;
+  --sl-color-storm-light: #8c9aa8;
+  --sl-color-mist: #f2f6f8;
+  --sl-color-night: #0a1016;
+  --sl-color-white: #ffffff;
+
+  /* ================================
+     Semantic colours — reference palette only (RULE T-05).
+     Theme-dependent: these :root values ARE the light theme; the
+     [data-st-theme] blocks at the end of this file remap them per
+     theme, riding Strata's html-level theme attribute.
+     ================================ */
+
+  --sl-color-accent: var(--sl-color-lagoon);
+  --sl-color-accent-strong: var(--sl-color-ocean-bright);
+  --sl-color-highlight: var(--sl-color-sunset);
+  --sl-color-surface: var(--sl-color-mist);
+  --sl-color-surface-warm: var(--sl-color-sand-light);
+  --sl-color-surface-raised: var(--sl-color-white);
+  --sl-color-surface-sunken: var(--sl-color-ocean-deep);
+  --sl-color-text-strong: var(--sl-color-night);
+  --sl-color-text-soft: var(--sl-color-storm);
+  --sl-color-text-inverse: var(--sl-color-white);
+  --sl-color-border: var(--sl-color-storm-light);
+
+  /* ================================
+     Opacity
+     ================================ */
+
+  --sl-opacity-faint: 0.2;
+  --sl-opacity-soft: 0.4;
+  --sl-opacity-strong: 0.6;
+  --sl-opacity-heavy: 0.8;
+
+  /* ================================
+     Transition durations — cinematic pacing, slower than typical UI
+     ================================ */
+
+  --sl-duration-fast: 0.2s;
+  --sl-duration-default: 0.4s;
+  --sl-duration-slow: 0.8s;
+  --sl-duration-cinematic: 1.2s;
+  --sl-duration-scene: 2.4s;
+
+  /* ================================
+     Fixed sizes — width/height values (RULE 07: never hardcoded)
+     ================================ */
+
+  --sl-size-xxxs: 40px;
+  --sl-size-xxs: 80px;
+  --sl-size-xs: 120px;
+  --sl-size-sm: 240px;
+  --sl-size-default: 320px;
+  --sl-size-md: 480px;
+  --sl-size-lg: 640px;
+  --sl-size-xl: 800px;
+  --sl-size-xxl: 960px;
+  --sl-size-xxxl: 1200px;
+
+  /* ================================
+     Radii
+     ================================ */
+
+  --sl-radius-sm: 4px;
+  --sl-radius-default: 8px;
+  --sl-radius-lg: 16px;
+  --sl-radius-round: 10000px;
+
+  /* ================================
+     Z-index — layering plan: canvas below content, overlays above
+     ================================ */
+
+  --sl-z-canvas: -10;
+  --sl-z-base: 0;
+  --sl-z-content: 10;
+  --sl-z-header: 40;
+  --sl-z-overlay: 60;
+  --sl-z-toast: 80;
+}
+
+/* ================================
+   Themes — semantic remaps only. Palette, spacing, type, etc. never
+   change per theme. :root[data-st-theme] rides Strata's theme
+   attribute on <html> with higher specificity than the bare
+   attribute selector, so project tokens always win the remap.
+   ================================ */
+
+:root[data-st-theme="light"] {
+  --sl-color-accent: var(--sl-color-lagoon);
+  --sl-color-accent-strong: var(--sl-color-ocean-bright);
+  --sl-color-highlight: var(--sl-color-sunset);
+  --sl-color-surface: var(--sl-color-mist);
+  --sl-color-surface-warm: var(--sl-color-sand-light);
+  --sl-color-surface-raised: var(--sl-color-white);
+  --sl-color-surface-sunken: var(--sl-color-ocean-deep);
+  --sl-color-text-strong: var(--sl-color-night);
+  --sl-color-text-soft: var(--sl-color-storm);
+  --sl-color-text-inverse: var(--sl-color-white);
+  --sl-color-border: var(--sl-color-storm-light);
+}
+
+:root[data-st-theme="dark"] {
+  --sl-color-accent: var(--sl-color-lagoon-light);
+  --sl-color-accent-strong: var(--sl-color-lagoon);
+  --sl-color-highlight: var(--sl-color-sunset);
+  --sl-color-surface: var(--sl-color-night);
+  --sl-color-surface-warm: var(--sl-color-ocean-deep);
+  --sl-color-surface-raised: var(--sl-color-ocean);
+  --sl-color-surface-sunken: var(--sl-color-mist);
+  --sl-color-text-strong: var(--sl-color-mist);
+  --sl-color-text-soft: var(--sl-color-storm-light);
+  --sl-color-text-inverse: var(--sl-color-night);
+  --sl-color-border: var(--sl-color-storm);
+}

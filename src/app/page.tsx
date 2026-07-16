@@ -41,25 +41,6 @@ export default function Home() {
         </div>
       </div>
 
-      <p className="text-secondary mb-0">
-        Built to field-test{" "}
-        <a
-          href="https://aftabibrahimkazi.github.io/strata"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Strata CSS
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://github.com/AftabIbrahimKazi/triforge"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Triforge
-        </a>
-        .
-      </p>
     </main>
   );
 }
