@@ -1,13 +1,6 @@
-// DEBUG — dev-only tools (stats, GUI toggles, helpers).
-//
-// FPS/stats overlay, axis/grid helpers, temporary tweak GUIs for
-// camera paths and weather states. Everything here must be:
-// - gated behind a dev check so none of it ships in production builds
-//   (guard with process.env.NODE_ENV !== 'production' at the call
-//   site in core.ts, so the bundler can drop it entirely)
-// - removable without touching other subsystems
-//
-// Note: no console.log in committed code (RULE TS-04) — use proper
-// debug tooling here instead.
-//
-// Empty until the first time we need to see numbers (likely Stage 1).
+// DEBUG — barrel for dev-only helper modules. This folder has more
+// than one named export, so (unlike the single-purpose subsystem
+// folders) it keeps a barrel index.ts alongside the real files.
+
+export { addDebugGrid, removeDebugGrid } from "./DebugGrid";
+export { DevFlyCameraController } from "./DevFlyCameraController";
