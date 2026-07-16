@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.1] — 2026-07-17
+
+### Changed
+- Engine subsystem folders renamed for clarity: `engine/loop` → `engine/animation-loop`, `engine/core.ts` split into `engine/core/Engine.ts` behind a new thin `engine/index.ts` entry point, `engine/debug` → `engine/helperDebugFunctions`, `engine/utils` → `engine/resourceManager` (now holds only the two GPU-teardown functions `Engine.ts` depends on; `clamp` moved into `DevFlyCameraController.ts`, its only caller)
+
 ## [0.7.0] — 2026-07-17
 
 ### Added

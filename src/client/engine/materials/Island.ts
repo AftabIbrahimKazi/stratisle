@@ -5,7 +5,7 @@
 
 import { Grid, SetPosition, evaluateGraph } from "@triforge/geometry-nodes";
 import * as THREE from "three";
-import type { ElevationField } from "../assets";
+import { loadElevationField, type ElevationField } from "../assets";
 
 const ISLAND_WORLD_SIZE = 5000;
 // Exaggerated well past the real elevation:footprint ratio (the source
@@ -40,6 +40,14 @@ export function createIslandMesh(geometry: THREE.BufferGeometry): THREE.Mesh {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = -Math.PI / 2; // Grid is flat in XY; lay it flat in a Y-up scene
   return mesh;
+}
+
+// Composed load -> build -> mesh, so the orchestrator (core.ts) makes
+// one call instead of defining the sequencing itself.
+export async function loadIslandMesh(url: string): Promise<THREE.Mesh> {
+  const elevation = await loadElevationField(url);
+  const geometry = buildIslandGeometry(elevation);
+  return createIslandMesh(geometry);
 }
 
 // Grid fills vertices row-major (row 0 first). Canvas image data is

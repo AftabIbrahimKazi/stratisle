@@ -8,5 +8,5 @@
 // Rules: plain TS, no React. Shader edge cases → consult the
 // threejs-scene / triforge skills before debugging blind.
 
-export { buildIslandGeometry, createIslandMesh } from "./Island";
+export { buildIslandGeometry, createIslandMesh, loadIslandMesh } from "./Island";
 export { buildSeaPlaneMesh } from "./SeaPlane";

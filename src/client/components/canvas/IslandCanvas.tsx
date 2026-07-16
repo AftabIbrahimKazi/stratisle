@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createEngine } from "@/client/engine/core";
+import { createEngine } from "@/client/engine";
 
 // The single React/engine boundary component. Mounts the canvas, calls
 // createEngine() exactly once, and destroys the engine on unmount.
