@@ -1,0 +1,44 @@
+/* layout.css — page-level shell structure and stacking (RULE L-01).
+   Controls position/z-index/spatial relationships between the fixed
+   3D canvas and every section stacked above it. No colour, typography,
+   or decorative styles here — those belong in component files. */
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.sl-scene-canvas {
+  height: 100dvh;
+  inset: 0;
+  position: fixed;
+  width: 100vw;
+  z-index: var(--sl-z-canvas);
+} /* full-viewport 3D backdrop; canvas is a replaced element so inset
+     alone won't stretch it — explicit height/width are required */
+
+.sl-header {
+  position: relative;
+  z-index: var(--sl-z-header);
+} /* above the fixed canvas so nav stays usable */
+
+.sl-main {
+  position: relative;
+  z-index: var(--sl-z-content);
+} /* above the fixed canvas so page copy stays readable */
+
+.sl-footer {
+  position: relative;
+  z-index: var(--sl-z-content);
+} /* above the fixed canvas, same layer as main content */

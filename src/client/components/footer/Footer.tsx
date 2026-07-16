@@ -2,7 +2,7 @@
 // Server Component: static content, no 'use client' needed.
 export function Footer() {
   return (
-    <footer className="container d-flex flex-wrap align-items-center justify-content-between gap-2 py-4 mt-5">
+    <footer className="sl-footer container d-flex flex-wrap align-items-center justify-content-between gap-2 py-4 mt-5">
       <p className="text-secondary mb-0">
         Stratisle — a South Nicobar Island 3D experience
       </p>

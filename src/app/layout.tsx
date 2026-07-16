@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/client/components/header/Header";
 import { Footer } from "@/client/components/footer/Footer";
+import { IslandCanvas } from "@/client/components/canvas/IslandCanvas";
 import "../styles/strata.css";
 import "../styles/variables.css";
+import "../styles/layout.css";
 import "../styles/main.css";
 import "../styles/responsive.css";
 
@@ -35,6 +37,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
+        <IslandCanvas />
         <Header />
         {children}
         <Footer />
