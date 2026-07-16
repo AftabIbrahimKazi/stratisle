@@ -6,7 +6,7 @@ import Link from "next/link";
 // component then.
 export function Header() {
   return (
-    <header>
+    <header className="sl-header">
       <nav className="navbar navbar-expand container">
         <Link href="/" className="navbar-brand">
           Stratisle

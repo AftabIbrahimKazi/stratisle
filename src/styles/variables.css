@@ -136,7 +136,7 @@
      Z-index — layering plan: canvas below content, overlays above
      ================================ */
 
-  --sl-z-canvas: -10;
+  --sl-z-canvas: 1;
   --sl-z-base: 0;
   --sl-z-content: 10;
   --sl-z-header: 40;

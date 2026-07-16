@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.0] — 2026-07-17
+
+### Added
+- First 3D pixels: `SceneEngine` orchestrator class in `src/client/engine/core.ts` wiring a persistent Three.js render pipeline — `camera/` (stateless builder), `loop/` (`RenderLoop`, rAF with clamped delta), `controller/` (`ViewportController`, permanent resize sync), `debug/` (`DebugGrid` origin grid, `DevFlyCameraController` — WASD + pointer-lock mouse-look + scroll-wheel FOV zoom, all removable via marked comment blocks)
+- `IslandCanvas` component, mounted in the root layout so the engine persists across all page navigations (not per-route)
+- Fixed, full-viewport canvas stacking via new `layout.css` — `.sl-scene-canvas` (`position: fixed`, viewport-sized), `.sl-header`/`.sl-main`/`.sl-footer` positioned above it using the existing `--sl-z-*` tokens
+- `DEV_LAN_ORIGIN` env var (`.env.local`, gitignored) wired into `next.config.ts`'s `allowedDevOrigins`, so the dev server can optionally be reached from another device on the same network
+- `client-only` and `@types/three` dependencies
+
+### Changed
+- `--sl-z-canvas` token: `-10` → `1` (canvas is now a positive-stacked fixed layer, not a negative background layer)
+- `main.css` returned to its placeholder role; its prior (layout-role) rules moved into the new `layout.css`
+- Landing page content simplified to a placeholder heading while the engine work is in progress
+- `SceneEngine.destroy()` now calls `renderer.forceContextLoss()` before `dispose()`, to fully release the WebGL context across React Strict Mode's double-effect dev remounts
+
 ## [0.5.0] — 2026-07-16
 
 ### Added
