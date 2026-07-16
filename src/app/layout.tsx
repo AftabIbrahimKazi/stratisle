@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Header } from "@/client/components/header/Header";
+import { Footer } from "@/client/components/footer/Footer";
 import "../styles/strata.css";
-import "../styles/tokens.css";
+import "../styles/variables.css";
 import "../styles/main.css";
 import "../styles/responsive.css";
 
@@ -32,7 +34,11 @@ export default function RootLayout({
       data-st-theme="light"
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
