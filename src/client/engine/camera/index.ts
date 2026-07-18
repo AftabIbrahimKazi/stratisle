@@ -9,10 +9,12 @@ import * as THREE from "three";
 
 const DEFAULT_FOV = 60;
 const DEFAULT_NEAR = 0.1;
-// Sea plane's far corners sit ~2828 units out (half-diagonal of the
-// 4000x4000 plane) — comfortable margin past that so the horizon
-// never clips.
-const DEFAULT_FAR = 6000;
+// Sea's far corners sit ~7071 units out (half-diagonal of the current
+// 10000x10000 sea — see materials/Sea.ts SEA_WORLD_SIZE), plus the
+// camera itself sits off-origin — comfortable margin past both so the
+// far corners never clip (that clipping previously showed up as
+// wedge-shaped gaps at the horizon, easy to mistake for a geometry bug).
+const DEFAULT_FAR = 9000;
 // Elevated establishing shot sized to frame the full 1000-unit island
 // with headroom, not the tight close-up tuned for the old 40-unit scale.
 const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 500, 1300);

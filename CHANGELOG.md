@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.0] — 2026-07-19
+
+### Added
+- Real animated sea (`engine/materials/Sea.ts`): Gerstner wave simulation via Triforge `modifier-core`'s `OceanModifier`, layered as three tiled passes — a coarse carrier grid (topology + foam), a mid-scale swell layer, and a fine chop layer — so wave size reads proportionate to the island instead of a single oversized rolling swell, without the vertex grid aliasing into noise
+- Sea shading rebuilt through a Triforge `shader-core` node graph (depth-band `ColorRamp`, foam blend, sun specular highlight, Fresnel rim) compiled once into a reused `ShaderMaterial`, replacing the earlier per-vertex CPU color loop
+- Procedural sky + sun (`engine/hdr`, `engine/lighting`): Preetham atmospheric sky dome (`three/examples` `Sky`) baked into a PMREM environment map, paired with a real `DirectionalLight` + `HemisphereLight` sharing one sun-direction source of truth
+- Sea's land cutout now follows the island's actual coastline (`isLandAtWorldPosition`) instead of its bounding square, closing the gap that previously rendered as neither island nor sea
+
+### Changed
+- Island's sea-level padding and the sea's own footprint are cut from each other using real elevation data, not a fixed bounding box, eliminating the shoreline z-fighting and coastline gap seen in earlier passes
+- Elevation data is now fetched once and shared between the island mesh and the sea's land mask, instead of each loading its own copy
+- Initial load: the sea builds a cheap carrier-only pass first and upgrades to full wave detail one frame later; the island's heavy ~200k-vertex geometry build is deferred a frame past its network fetch — both reduce the load-time stall without changing steady-state behavior
+- Camera far-clip distance corrected for the sea's actual extent (was tuned for a since-resized plane, silently clipping the horizon)
+- Renderer now uses ACES tone mapping, required for the physically-based sky to read as sky rather than blown-out white
+
 ## [0.7.1] — 2026-07-17
 
 ### Changed

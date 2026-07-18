@@ -1,6 +1,6 @@
 {
   "name": "stratisle",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@triforge/geometry-nodes": "0.1.1",
+    "@triforge/modifier-core": "^0.1.1",
+    "@triforge/shader-core": "^0.4.2",
     "client-only": "^0.0.1",
     "next": "16.2.10",
     "react": "19.2.4",
