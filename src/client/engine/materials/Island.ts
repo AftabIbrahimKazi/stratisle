@@ -96,6 +96,34 @@ export function isLandAtWorldPosition(
   return sample > 0;
 }
 
+// Shoreline foam (Sea.ts) only needs distance within its own foam-band
+// width, not a true global nearest-land distance — so this is a bounded
+// ring search (8 directions, growing radius) capped at maxDistance,
+// cheap enough to run per sea vertex once when the land mask loads/
+// changes. Returns maxDistance for anything farther than that (i.e.
+// "not near shore"), never a real unbounded distance.
+const COAST_SEARCH_DIRECTIONS = 8;
+const COAST_SEARCH_STEP = 20;
+
+export function distanceToNearestLand(
+  elevation: ElevationField,
+  worldX: number,
+  worldZ: number,
+  maxDistance: number,
+): number {
+  if (isLandAtWorldPosition(elevation, worldX, worldZ)) return 0;
+
+  for (let radius = COAST_SEARCH_STEP; radius <= maxDistance; radius += COAST_SEARCH_STEP) {
+    for (let i = 0; i < COAST_SEARCH_DIRECTIONS; i++) {
+      const angle = (i / COAST_SEARCH_DIRECTIONS) * Math.PI * 2;
+      const x = worldX + Math.cos(angle) * radius;
+      const z = worldZ + Math.sin(angle) * radius;
+      if (isLandAtWorldPosition(elevation, x, z)) return radius;
+    }
+  }
+  return maxDistance;
+}
+
 // Grid fills vertices row-major (row 0 first). Canvas image data is
 // also row-major but with row 0 at the image's TOP — flipping here
 // keeps the island reading right-side-up instead of mirrored.
