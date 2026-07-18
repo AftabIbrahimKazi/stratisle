@@ -9,4 +9,4 @@
 // threejs-scene / triforge skills before debugging blind.
 
 export { buildIslandGeometry, createIslandMesh } from "./Island";
-export { buildSeaPlaneMesh } from "./SeaPlane";
+export { Sea } from "./Sea";

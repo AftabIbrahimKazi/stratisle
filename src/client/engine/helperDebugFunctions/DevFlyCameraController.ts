@@ -9,7 +9,10 @@
 
 import * as THREE from "three";
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
-import { clamp } from "../utils";
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
 
 // Scaled for the 1000-4000 unit map — the old value (tuned for a
 // 40-unit island) would take minutes to cross the new scene.
