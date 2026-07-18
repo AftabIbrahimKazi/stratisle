@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8.1] — 2026-07-19
+
+### Added
+- Dynamic shoreline foam: `Island.ts`'s `distanceToNearestLand` (bounded ring search against the heightmap, cached once per land-mask refresh) feeds a `coastDistance` vertex attribute into `Sea.ts`'s shader graph, producing a lapping foam band at the coastline. The lapping animation is driven by a live GPU uniform updated every frame in `Sea.update()`, independent of the sea's own throttled (15Hz) geometry rebuild — genuinely continuous motion, not a stepped one.
+
 ## [0.8.0] — 2026-07-19
 
 ### Added

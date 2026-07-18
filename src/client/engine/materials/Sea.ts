@@ -32,9 +32,10 @@ import {
   MaterialOutput,
   Fresnel,
   ShaderMath,
+  Attribute,
 } from "@triforge/shader-core";
 import * as THREE from "three";
-import { ISLAND_WORLD_SIZE, isLandAtWorldPosition } from "./Island";
+import { ISLAND_WORLD_SIZE, isLandAtWorldPosition, distanceToNearestLand } from "./Island";
 import { computeSunDirection } from "../hdr";
 import type { ElevationField } from "../assets";
 
@@ -166,6 +167,18 @@ const CHOP_TILE_SIZE = 40;
 const CHOP_RESOLUTION = 256;
 const CHOP_SCALE = 0.5;
 
+// Shoreline foam band — width in world units the coast-distance search
+// (Island.ts's distanceToNearestLand) bothers computing, and the range
+// the shader's MapRange fades foam brightness across. Kept narrow: this
+// is a lapping-surf band right at the coastline, not a general shallow-
+// water tint (that's the existing depth ColorRamp's job).
+const SHORE_BAND_WIDTH = 220;
+// Spatial frequency of the lapping ripple along the coastline (radians
+// per world unit) and its animation speed (radians/sec) — both tuned by
+// eye for a slow, uneven lap rather than a uniform pulsing ring.
+const SHORE_LAP_SPATIAL_FREQ = 0.05;
+const SHORE_LAP_SPEED = 1.4;
+
 // Higher = tighter, more mirror-like sparkle; lower = broader, softer
 // glint. 128 is a fairly tight highlight, appropriate for calm-ish water.
 const SPECULAR_SHININESS = 128;
@@ -281,7 +294,14 @@ function applyChopDetail(geometry: THREE.BufferGeometry, chopModifier: OceanModi
 // is reused across every geometry rebuild (waves, land-mask refinement),
 // so per-frame cost drops to whatever the GPU does per fragment, not a
 // CPU loop over every vertex.
-function buildSeaMaterial(): THREE.ShaderMaterial {
+// Result includes shoreTime: the ShaderMath node whose "a" input carries
+// the live lapping-animation clock. Its `.parameters.a` is a GPU uniform
+// after compile() (see ShaderNode._wireParameters in shader-core) — Sea's
+// per-frame update() writes to it directly, animating the shoreline foam
+// every rendered frame regardless of the geometry's own throttled (15Hz)
+// rebuild rate. This is what makes the shore effect dynamic rather than a
+// static painted band.
+function buildSeaMaterial(): { material: THREE.ShaderMaterial; shoreTime: ShaderMath } {
   const geometry = new ShaderGeometry();
   const distance = new VectorMath({ mode: "LENGTH", vector: geometry.output("Position") });
   const depthFactor = new MapRange({
@@ -346,13 +366,53 @@ function buildSeaMaterial(): THREE.ShaderMaterial {
     colorB: SKY_REFLECTION_TINT,
   });
 
+  // Shoreline foam — a lapping band right at the coastline, distinct from
+  // both the depth ColorRamp (keyed on distance-from-island-center) and
+  // OceanAttribute's wave-crest foam (keyed on the Jacobian, only fires
+  // where waves actively break). "coastDistance" is a per-vertex
+  // attribute Sea.ts bakes once per land-mask refresh via
+  // Island.ts's distanceToNearestLand — see Sea's _rebuildCoastDistance.
+  const coastDistance = new Attribute("coastDistance", "float");
+  const shoreBand = new MapRange({
+    value: coastDistance.output("Fac"),
+    fromMin: 0,
+    fromMax: SHORE_BAND_WIDTH,
+    toMin: 1,
+    toMax: 0,
+    clamp: true,
+  });
+  // Lapping animation: a sine wave whose phase mixes distance-from-center
+  // (spatial variation, so the whole coastline doesn't pulse in lockstep)
+  // and shoreTime (temporal — driven live from Sea.update(), not tied to
+  // the throttled geometry rebuild). MapRange keeps the trough at 0.4
+  // rather than 0 so the band never fully vanishes between laps.
+  const spatialPhase = new ShaderMath({ mode: "MULTIPLY", a: distance.output("Value"), b: SHORE_LAP_SPATIAL_FREQ });
+  const shoreTime = new ShaderMath({ mode: "MULTIPLY", a: 0, b: SHORE_LAP_SPEED });
+  const lapPhase = new ShaderMath({ mode: "SUBTRACT", a: spatialPhase.output("Value"), b: shoreTime.output("Value") });
+  const lapWave = new ShaderMath({ mode: "SINE", a: lapPhase.output("Value") });
+  const lapIntensity = new MapRange({
+    value: lapWave.output("Value"),
+    fromMin: -1,
+    fromMax: 1,
+    toMin: 0.4,
+    toMax: 1,
+    clamp: true,
+  });
+  const shoreFoam = new ShaderMath({ mode: "MULTIPLY", a: shoreBand.output("Result"), b: lapIntensity.output("Result") });
+  const withShoreFoam = new MixRGB({
+    mode: "MIX",
+    fac: shoreFoam.output("Value"),
+    colorA: withFresnel.output("Color"),
+    colorB: "#ffffff",
+  });
+
   // Emission (unlit, self-illuminating) matches the previous
   // MeshBasicMaterial's behaviour — the scene's lights (lighting/) don't
   // actually light this surface; the specular/fresnel above are a
   // hand-built approximation of light response, not real illumination.
-  const surface = new Emission({ color: withFresnel.output("Color"), strength: 1.0 });
+  const surface = new Emission({ color: withShoreFoam.output("Color"), strength: 1.0 });
   const output = new MaterialOutput({ surface: surface.output("BSDF") });
-  return output.compile();
+  return { material: output.compile(), shoreTime };
 }
 
 export class Sea {
@@ -360,9 +420,16 @@ export class Sea {
   private readonly _carrierModifier: OceanModifier;
   private readonly _swellModifier: OceanModifier;
   private readonly _chopModifier: OceanModifier;
+  private readonly _shoreTime: ShaderMath;
   private _elapsedTime = 0;
   private _timeSinceLastRebuild = 0;
   private _elevation: ElevationField | null = null;
+  // One coastDistance value per carrier vertex, same index order every
+  // rebuild (carrier topology is static). Starts filled at SHORE_BAND_WIDTH
+  // ("not near shore") so the shoreline foam graph reads a safe default —
+  // not 0, which its MapRange maps to full foam — before real elevation
+  // data (and thus a real coastline) has loaded.
+  private _coastDistances: Float32Array;
 
   constructor() {
     this._carrierModifier = new OceanModifier({
@@ -399,7 +466,11 @@ export class Sea {
     // of the reported load jank, not steady-state per-frame cost). The
     // full detail swaps in one frame later via requestAnimationFrame,
     // imperceptible after first paint but avoids stalling it.
-    this.mesh = new THREE.Mesh(this._buildGeometry({ includeDetail: false }), buildSeaMaterial());
+    this._coastDistances = new Float32Array(SEA_RESOLUTION * SEA_RESOLUTION).fill(SHORE_BAND_WIDTH);
+
+    const { material, shoreTime } = buildSeaMaterial();
+    this._shoreTime = shoreTime;
+    this.mesh = new THREE.Mesh(this._buildGeometry({ includeDetail: false }), material);
     requestAnimationFrame(() => {
       const nextGeometry = this._buildGeometry({ includeDetail: true });
       this.mesh.geometry.dispose();
@@ -413,6 +484,7 @@ export class Sea {
   // waiting for the next throttled tick.
   public setLandMask(elevation: ElevationField): void {
     this._elevation = elevation;
+    this._coastDistances = this._computeCoastDistances(elevation);
     const nextGeometry = this._buildGeometry({ includeDetail: true });
     this.mesh.geometry.dispose();
     this.mesh.geometry = nextGeometry;
@@ -420,6 +492,13 @@ export class Sea {
 
   public update(delta: number): void {
     this._elapsedTime += delta;
+
+    // Shoreline foam's lapping animation is a live GPU uniform (see
+    // buildSeaMaterial's shoreTime node) — updated every frame, not
+    // throttled like the geometry rebuild below. This is what makes the
+    // effect read as continuously lapping rather than stepping at 15Hz.
+    this._shoreTime.parameters.a = this._elapsedTime;
+
     this._timeSinceLastRebuild += delta;
     if (this._timeSinceLastRebuild < UPDATE_INTERVAL_SECONDS) return;
     this._timeSinceLastRebuild = 0;
@@ -430,6 +509,19 @@ export class Sea {
     const nextGeometry = this._buildGeometry({ includeDetail: true });
     this.mesh.geometry.dispose();
     this.mesh.geometry = nextGeometry;
+  }
+
+  // Bounded per-vertex search (Island.ts's distanceToNearestLand) against
+  // the carrier's static topology — same vertex order every rebuild, so
+  // this only needs to run once per land-mask refresh, not per frame.
+  private _computeCoastDistances(elevation: ElevationField): Float32Array {
+    const topology = this._carrierModifier.apply(new THREE.BufferGeometry());
+    const position = topology.getAttribute("position");
+    const distances = new Float32Array(position.count);
+    for (let i = 0; i < position.count; i++) {
+      distances[i] = distanceToNearestLand(elevation, position.getX(i), position.getZ(i), SHORE_BAND_WIDTH);
+    }
+    return distances;
   }
 
   public dispose(): void {
@@ -450,6 +542,10 @@ export class Sea {
       applySwellDisplacement(geometry, this._swellModifier);
       applyChopDetail(geometry, this._chopModifier);
     }
+    // Carrier vertex order is stable across rebuilds, so the cached
+    // per-vertex distances line up positionally even though dropLandTriangles
+    // below only edits the index, never the position/attribute buffers.
+    geometry.setAttribute("coastDistance", new THREE.BufferAttribute(this._coastDistances, 1));
     dropLandTriangles(geometry, this._elevation);
     // Positions may have been rewritten by the swell/chop layers after
     // the carrier's own analytic Gerstner normals were computed —
